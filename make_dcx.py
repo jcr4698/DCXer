@@ -38,34 +38,36 @@ def main():
 
                 # Make dcx
                 file_ptr = create_dcx(dcx_title)
-
-                # Prompt user to open files in the filesystem
-                FILE_DIALOG_CMD = ["zenity", "--file-selection", "--multiple", "--text='Select Files...'"]
+                
                 try:
-                    file_dialog_res = subprocess.check_output(FILE_DIALOG_CMD).decode("utf-8")
+                    # zenity command and null value
+                    FILE_DIALOG_CMD = ["zenity", "--file-selection", "--multiple", "--text='Select Files...'"]
+                    DEVNULL = open(os.devnull, 'wb')
 
-                    filepath = file_dialog_res[0:len(file_dialog_res)-1].split("|")
-
+                    # Prompt user to open files in the filesystem
+                    file_dialog_res = subprocess.run(FILE_DIALOG_CMD, stdout=subprocess.PIPE, stderr=DEVNULL).stdout.decode("utf-8")
+                    fp_str = file_dialog_res[0:len(file_dialog_res)-1]
+                    fp_arr = fp_str.split("|")
                     # tk.Tk().withdraw()
                     # filepath = filedialog.askopenfilenames(title="Open a Text File", initialdir=CONTENT_DIR, filetypes=(("text files","*.txt"), ("all files","*.*")))
-			
-                    # At least one file on the DCX
-                    if(len(filepath) != 0):
 
-                        for fpi in range(len(filepath)):
-                            if(is_stallion_file(filepath[fpi])):
+                    # At least one file on the DCX
+                    if(len(fp_str) > 0 and len(filepath) > 0):
+
+                        for fpi in range(len(fp_arr)):
+                            if(is_stallion_file(fp_arr[fpi])):
 
                                 # determine the coordinates based on the index
                                 x, y, w, h = get_pos_and_dims(fpi, STALLION_SCREEN_WIDTH, STALLION_SCREEN_HEIGHT)
 
                                 # print file location
-                                print(filepath[fpi])
+                                print(fp_arr[fpi])
 
                                 # add file to dcx
-                                write_to_dcx(file_ptr, filepath[fpi], x, y, w, h)
+                                write_to_dcx(file_ptr, fp_arr[fpi], x, y, w, h)
 
                             else:
-                                print("file not found :(")
+                                print("<file not found>")
 
                         # Close dcx
                         close_dcx(file_ptr)
@@ -76,15 +78,24 @@ def main():
                     # no files were selected
                     else:
                         close_dcx(file_ptr)
-                        #os.remove(dcx_title)
-                        print("\nDCX file was not created")
+                        if(os.path.isfile(dcx_title)):
+                            os.remove(dcx_title)
+                        print("<no files were selected>")
+                        print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
                 except subprocess.CalledProcessError as e:
                     close_dcx(file_ptr)
                     if(os.path.isfile(dcx_title)):
                         os.remove(dcx_title)
-                    print("No files were selected. DCX file creation has been cancelled.")
-                    
+                    print("<a zenity error has occurred>")
+                    print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+
+                except:
+                    close_dcx(file_ptr)
+                    if(os.path.isfile(dcx_title)):
+                        os.remove(dcx_title)
+                    print("<an unexpected error has occurred>")
+                    print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
             else:
                 print("'" + dcx_title + "' already exists")
