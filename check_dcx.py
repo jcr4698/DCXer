@@ -50,6 +50,18 @@ def get_pos_and_dims(i:int, x_dim:int, y_dim:int):
         return float('%.3f'%(0.167 * (i%x_dim))), float('%.3f'%(0.337 * floor(i/x_dim))), 1.0, 0.326
     return 0.0, float('%.3f'%(0.674+0.337)), 1.0, 1.0
 
+''' Print text in error format (RED) '''
+def print_err(err:str):
+    print("\033[91m{}\033[00m".format(err))
+
+''' Print text in file format (GREEN) '''
+def print_txt(txt:str):
+    print("\033[1;32m{}\033[00m".format(txt))
+
+''' Print text in ending format (BLUE)'''
+def print_end(txt:str):
+    print("\033[1;34m{}\033[00m".format(txt))
+
 # file_ptr = create_dcx("hello.txt")
 # write_to_dcx(file_ptr, "hello, world!", 1.01, 2.02, 3.1, 4.2)
 # write_to_dcx(file_ptr, "hi!", 2.01, 1.02, 3.18, 0.2)

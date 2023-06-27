@@ -3,7 +3,7 @@
 import sys
 import os
 import numpy as np
-from check_dcx import is_stallion_file, create_dcx, write_to_dcx, close_dcx, get_pos_and_dims
+from check_dcx import is_stallion_file, create_dcx, write_to_dcx, close_dcx, get_pos_and_dims, print_err, print_txt, print_end
 import subprocess
 
 CONTENT_DIR = "/home/vislab/Gallery/Content/"
@@ -52,52 +52,60 @@ def main():
                     # filepath = filedialog.askopenfilenames(title="Open a Text File", initialdir=CONTENT_DIR, filetypes=(("text files","*.txt"), ("all files","*.*")))
 
                     # At least one file on the DCX
-                    if(len(fp_str) > 0 and len(filepath) > 0):
+                    if(len(fp_str) > 0 and len(fp_arr) > 0):
 
                         for fpi in range(len(fp_arr)):
+
+                            #elif():
+                            #    # verify file is a media type
+                            #    pass
+
                             if(is_stallion_file(fp_arr[fpi])):
 
                                 # determine the coordinates based on the index
                                 x, y, w, h = get_pos_and_dims(fpi, STALLION_SCREEN_WIDTH, STALLION_SCREEN_HEIGHT)
 
                                 # print file location
-                                print(fp_arr[fpi])
+                                print_txt(fp_arr[fpi])
 
                                 # add file to dcx
                                 write_to_dcx(file_ptr, fp_arr[fpi], x, y, w, h)
 
                             else:
-                                print("<file not found>")
+                                print_err("<file not found>")
 
                         # Close dcx
                         close_dcx(file_ptr)
 
                         # inform user of file creation
-                        print("\nDCX file '" + dcx_name + "' has been created.\n")
+                        print_end("\nDCX file '" + dcx_name + "' has been created.\n")
 
                     # no files were selected
                     else:
                         close_dcx(file_ptr)
                         if(os.path.isfile(dcx_title)):
                             os.remove(dcx_title)
-                        print("<no files were selected>")
-                        print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                        print_err("<no files were selected>")
+                        print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
                 except subprocess.CalledProcessError as e:
                     close_dcx(file_ptr)
                     if(os.path.isfile(dcx_title)):
                         os.remove(dcx_title)
-                    print("<a zenity error has occurred>")
-                    print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                    print_err("<a zenity error has occurred>")
+                    print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
-                except:
+                except Exception as e:
                     close_dcx(file_ptr)
                     if(os.path.isfile(dcx_title)):
                         os.remove(dcx_title)
-                    print("<an unexpected error has occurred>")
-                    print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                    print_err("An unexpected error has occurred:")
+                    #print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                    print_err(str(e))
+                    print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
             else:
                 print("'" + dcx_title + "' already exists")
+            print("--------------------------------------------------")
 
 main()
