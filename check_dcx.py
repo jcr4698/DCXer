@@ -1,4 +1,5 @@
 from os.path import exists
+from os import devnull as DEVNULL
 from _io import TextIOWrapper as File
 from math import floor
 
@@ -13,9 +14,12 @@ def is_stallion_file(file_dir:str):
 
 ''' Create and initialize a dcx file of name DCX_NAME. '''
 def create_dcx(dcx_name:str) -> File:
-    file_ptr = open(dcx_name, "w+")
-    file_ptr.write("<!DOCTYPE state>\n<state>\n <version>1</version>\n")
-    return file_ptr
+    try:
+        file_ptr = open(dcx_name, "w+")
+        file_ptr.write("<!DOCTYPE state>\n<state>\n <version>1</version>\n")
+        return file_ptr
+    except FileNotFoundError:
+        return DEVNULL
 
 ''' Add file FILE_PATH to the dcx file FILE. '''
 def write_to_dcx(dcx_file:File, file_path:str, x_coord, y_coord, width, height):
@@ -45,9 +49,9 @@ def close_dcx(dcx_file:File):
     dcx_file.close()
 
 ''' Calculate the position and dimensions '''
-def get_pos_and_dims(i:int, x_dim:int, y_dim:int):
-    if(i < x_dim * y_dim):
-        return float('%.3f'%(0.167 * (i%x_dim))), float('%.3f'%(0.337 * floor(i/x_dim))), 1.0, 0.326
+def get_pos_and_dims(i:int, x_dim:int, y_dim:int, pic_per_scr:int):
+    if(i < (x_dim * y_dim)*pic_per_scr):
+        return float('%.3f'%((0.167 / pic_per_scr) * (i%(x_dim * pic_per_scr)))), float('%.3f'%(0.337 * floor(i/(x_dim * pic_per_scr)))), 1.0, 0.326
     return 0.0, float('%.3f'%(0.674+0.337)), 1.0, 1.0
 
 ''' Print text in error format (RED) '''

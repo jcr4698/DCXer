@@ -2,12 +2,16 @@
 
 import sys
 import os
+# from os import devnull as DEVNULL
 import numpy as np
 from check_dcx import is_stallion_file, create_dcx, write_to_dcx, close_dcx, get_pos_and_dims, print_err, print_txt, print_end
 import subprocess
 
-CONTENT_DIR = "/home/vislab/Gallery/Content/"
-DCX_DIR = "/home/vislab/Gallery/jan-projects/DCXer/dcx_files/"
+# CONTENT_DIR = "/home/vislab/Gallery/Content/"
+# DCX_DIR = "/home/vislab/Gallery/jan-projects/DCXer/dcx_files/"
+
+CONTENT_DIR = "/mnt/c/Users/jan/Desktop/Files/Work_Material/Employment/Visualizations_Lab/Display_Cluster/Content/"
+DCX_DIR = "/mnt/c/Users/jan/Desktop/Files/Work_Material/Employment/Visualizations_Lab/Display_Cluster/DCXer/dcx_files/"
 
 STALLION_SCREEN_WIDTH = 6
 STALLION_SCREEN_HEIGHT = 3
@@ -36,13 +40,22 @@ def main():
                 # file_amt = int(input("How many files will be in this file? "))
                 print("Files selected are...\n")
 
-                # Make dcx
-                file_ptr = create_dcx(dcx_title)
-                
                 try:
+                    # Make dcx
+                    file_ptr = create_dcx(dcx_title)
+
+                    DEVNULL = open(os.devnull, 'wb')
+
+                    if file_ptr == DEVNULL:
+                        # close_dcx(file_ptr)
+                        if(os.path.isfile(dcx_title)):
+                            os.remove(dcx_title)
+                        print_err("<folder \"" + dcx_title + "\" does not exist>")
+                        print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                        return
+
                     # zenity command and null value
                     FILE_DIALOG_CMD = ["zenity", "--file-selection", "--multiple", "--text='Select Files...'"]
-                    DEVNULL = open(os.devnull, 'wb')
 
                     # Prompt user to open files in the filesystem
                     file_dialog_res = subprocess.run(FILE_DIALOG_CMD, stdout=subprocess.PIPE, stderr=DEVNULL).stdout.decode("utf-8")
@@ -54,6 +67,8 @@ def main():
                     # At least one file on the DCX
                     if(len(fp_str) > 0 and len(fp_arr) > 0):
 
+                        pic_per_scr = int(input("How many files per DCX? "))
+
                         for fpi in range(len(fp_arr)):
 
                             #elif():
@@ -63,7 +78,7 @@ def main():
                             if(is_stallion_file(fp_arr[fpi])):
 
                                 # determine the coordinates based on the index
-                                x, y, w, h = get_pos_and_dims(fpi, STALLION_SCREEN_WIDTH, STALLION_SCREEN_HEIGHT)
+                                x, y, w, h = get_pos_and_dims(fpi, STALLION_SCREEN_WIDTH, STALLION_SCREEN_HEIGHT, pic_per_scr)
 
                                 # print file location
                                 print_txt(fp_arr[fpi])
@@ -103,6 +118,7 @@ def main():
                     #print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
                     print_err(str(e))
                     print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
+                    
 
             else:
                 print("'" + dcx_title + "' already exists")
