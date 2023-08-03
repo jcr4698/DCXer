@@ -14,23 +14,22 @@ import subprocess
 
 ''' DETERMINE WHETHER FILE IS PNG '''
 
-#import mimetypes
-#mimetypes.init()
+import mimetypes
+mimetypes.init()
 
-#file = "/home/vislab/Gallery/Content/Dance_at_Le_Moulin_de_la_Galette.pyr"
-#file = ".png"
-#
-#mimestart = mimetypes.guess_type(file)[0]
-#
-#print(file[len(file)-4:len(file)])
-#if len(file) > 5 and file[len(file)-4:len(file)] == ".pyr":
+file = "/home/vislab/Gallery/Content/Dance_at_Le_Moulin_de_la_Galette"
+
+# mimestart = mimetypes.guess_type(file)[0]
+mimestart = mimetypes.guess_type(file)
+print(mimestart)
+
+# print(file[len(file)-4:len(file)])
+# if len(file) > 5 and file[len(file)-4:len(file)] == ".pyr":
 #    print("pyr file")
-#
-#if mimestart != None:
+
+# if mimestart != None:
 #    mimestart = mimestart.split("/")[0]
 #    if mimestart in ["video", "image"]:
 #        print("media type")
 
 ''' RESOLUTION OF IMAGE '''
-
-import 

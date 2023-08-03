@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import signal
 import os
 # from os import devnull as DEVNULL
 import numpy as np
@@ -18,6 +19,18 @@ STALLION_SCREEN_HEIGHT = 3
 
 def main():
 
+    # interruption handler variables
+    curr_dcx_title = None
+    curr_dcx_name = None
+
+    # handle keyboard interrupt
+    def signal_handler(sig, frame):
+        if(os.path.isfile(curr_dcx_title)):
+            os.remove(curr_dcx_title)
+        print_err("\n<Keyboard Signal Interruption>")
+        print_end("\nDCX file '" + curr_dcx_name + "' has been cancelled.\n")
+        sys.exit(0)
+
     # Make sure func has at least a name
     if(len(sys.argv) <= 1):
         print("I require at least one file name")
@@ -29,6 +42,10 @@ def main():
         # print(file_names)
         
         for dcx_name in dcx_names:
+
+            signal.signal(signal.SIGINT, signal_handler)
+
+            # CHECK TO SEE IF FILE HAS ".dcx" 
 
             # Name of dcx
             dcx_title = DCX_DIR + dcx_name
@@ -44,13 +61,17 @@ def main():
                     # Make dcx
                     file_ptr = create_dcx(dcx_title)
 
+                    # Save dcx file info in case of interruption
+                    curr_dcx_title = dcx_title
+                    curr_dcx_name = dcx_name
+
                     DEVNULL = open(os.devnull, 'wb')
 
                     if file_ptr == DEVNULL:
                         # close_dcx(file_ptr)
                         if(os.path.isfile(dcx_title)):
                             os.remove(dcx_title)
-                        print_err("<folder \"" + dcx_title + "\" does not exist>")
+                        print_err("<Folder \"" + dcx_title + "\" does not exist>")
                         print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
                         return
 
@@ -67,7 +88,7 @@ def main():
                     # At least one file on the DCX
                     if(len(fp_str) > 0 and len(fp_arr) > 0):
 
-                        pic_per_scr = int(input("How many files per DCX? "))
+                        pic_per_scr = int(input("How many media files per screen? "))
 
                         for fpi in range(len(fp_arr)):
 
@@ -100,14 +121,14 @@ def main():
                         close_dcx(file_ptr)
                         if(os.path.isfile(dcx_title)):
                             os.remove(dcx_title)
-                        print_err("<no files were selected>")
+                        print_err("<No files were selected>")
                         print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
                 except subprocess.CalledProcessError as e:
                     close_dcx(file_ptr)
                     if(os.path.isfile(dcx_title)):
                         os.remove(dcx_title)
-                    print_err("<a zenity error has occurred>")
+                    print_err("<A zenity error has occurred>")
                     print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
 
                 except Exception as e:
@@ -118,10 +139,10 @@ def main():
                     #print("\nDCX file '" + dcx_name + "' has been cancelled.\n")
                     print_err(str(e))
                     print_end("\nDCX file '" + dcx_name + "' has been cancelled.\n")
-                    
 
             else:
-                print("'" + dcx_title + "' already exists")
+                print_err("\n'" + dcx_title + "' already exists\n")
             print("--------------------------------------------------")
 
-main()
+if __name__ == '__main__':
+    main()
