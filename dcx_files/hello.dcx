@@ -1,0 +1,37 @@
+<!DOCTYPE state>
+<state>
+ <version>1</version>
+ <ContentWindow>
+  <URI>/mnt/c/Users/jan/Pictures/IMG_7898.jpg</URI>
+  <x>0.0</x>
+  <y>0.0</y>
+  <w>1.0</w>
+  <h>0.326</h>
+  <centerX>0.5</centerX>
+  <centerY>0.5</centerY>
+  <zoom>1</zoom>
+  <selected>0</selected>
+ </ContentWindow>
+ <ContentWindow>
+  <URI>/mnt/c/Users/jan/Pictures/IMG_7968.JPG</URI>
+  <x>0.167</x>
+  <y>0.0</y>
+  <w>1.0</w>
+  <h>0.326</h>
+  <centerX>0.5</centerX>
+  <centerY>0.5</centerY>
+  <zoom>1</zoom>
+  <selected>0</selected>
+ </ContentWindow>
+ <ContentWindow>
+  <URI>/mnt/c/Users/jan/Pictures/IMG_8330.JPG</URI>
+  <x>0.334</x>
+  <y>0.0</y>
+  <w>1.0</w>
+  <h>0.326</h>
+  <centerX>0.5</centerX>
+  <centerY>0.5</centerY>
+  <zoom>1</zoom>
+  <selected>0</selected>
+ </ContentWindow>
+</state>

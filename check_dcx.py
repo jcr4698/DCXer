@@ -1,10 +1,6 @@
 from os.path import exists
-from os import devnull as DEVNULL
 from _io import TextIOWrapper as File
 from math import floor
-
-# CONTENT = "/mnt/c/Users/jan/Desktop/Files/Work_Material/Employment/Visualizations_Lab/Display_Cluster/DCXer/Content/"
-# COMMON = "/mnt/c/Users/jan/Desktop/Files/Work_Material/Employment/Visualizations_Lab/Display_Cluster/DCXer/Common/"
 
 ''' Determine whether FILE_NAME exists and where. '''
 def is_stallion_file(file_dir:str):
@@ -17,14 +13,14 @@ def create_dcx(dcx_name:str) -> File:
     try:
         file_ptr = open(dcx_name, "w+")
         file_ptr.write("<!DOCTYPE state>\n<state>\n <version>1</version>\n")
-        return file_ptr
-    except FileNotFoundError:
-        return DEVNULL
+        return file_ptr, ""
+    except FileNotFoundError as e:
+        return None, str(e)
 
 ''' Add file FILE_PATH to the dcx file FILE. '''
 def write_to_dcx(dcx_file:File, file_path:str, x_coord, y_coord, width, height):
 
-    # append hearder opener of dcx file
+    # append header opener of dcx file
     content_window = " <ContentWindow>\n"
 
     # append associated location of file
@@ -41,12 +37,22 @@ def write_to_dcx(dcx_file:File, file_path:str, x_coord, y_coord, width, height):
 
     # append header closer of dcx file
     content_window += " </ContentWindow>\n"
-    dcx_file.write(content_window)
+
+    # write appended content to dcx file pointer
+    try:
+        dcx_file.write(content_window)
+        return None
+    except Exception as e:
+        return str(e)
 
 ''' Close the dcx file of name DCX_NAME. '''
 def close_dcx(dcx_file:File):
-    dcx_file.write("</state>")
-    dcx_file.close()
+    try:
+        dcx_file.write("</state>")
+        dcx_file.close()
+        return None
+    except Exception as e:
+        return str(e)
 
 ''' Calculate the position and dimensions '''
 def get_pos_and_dims(i:int, x_dim:int, y_dim:int, pic_per_scr:int):
@@ -66,10 +72,21 @@ def print_txt(txt:str):
 def print_end(txt:str):
     print("\033[1;34m{}\033[00m".format(txt))
 
-# file_ptr = create_dcx("hello.txt")
-# write_to_dcx(file_ptr, "hello, world!", 1.01, 2.02, 3.1, 4.2)
-# write_to_dcx(file_ptr, "hi!", 2.01, 1.02, 3.18, 0.2)
-# close_dcx(file_ptr)
+''' Return a file name with ".dcx" at the end, if it doesn't already. '''
+def dcx_file_name(file_name:str):
+    # determine if file_name has period at the beginning and remove it
+    is_hidden = True if file_name[0] == "." else False
+    curr_name = file_name[1:] if is_hidden else file_name
 
-# for n in range(19):
-#     print(n, get_pos_and_dims(n, 6, 3))
+    # length of file_name and index of ".dcx"
+    name_len = len(curr_name) - 4
+    dcx_idx = curr_name.rfind(".dcx")
+    # print(dcx_idx, "/", name_len)
+
+    # return the correct display cluster file based on these features
+    if((dcx_idx > -1) and (name_len == dcx_idx)):
+        # print("file name:", "."+curr_name if is_hidden else curr_name)
+        return "."+curr_name if is_hidden else curr_name
+    else:
+        # print("file name:", "."+curr_name+".dcx" if is_hidden else curr_name+".dcx")
+        return "."+curr_name+".dcx" if is_hidden else curr_name+".dcx"
